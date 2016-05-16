@@ -103,7 +103,7 @@ int getMBID(const char *path, char mbid[MBID_BUFFER_SIZE]) {
     while (s) {
         if (-1 == mfile(3,head,fp)) break;
 
-        if (!strncmp(head,"ID3",3) == 0) {
+        if (strncmp(head,"ID3",3) != 0) {
             debug("No ID3v2 tag found: %s\n",path);
             errno = EINVAL;
             goto mbid_err_exit;
