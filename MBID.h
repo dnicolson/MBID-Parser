@@ -40,7 +40,7 @@ extern "C"
 #endif
 
 #define MBID_BUFFER_SIZE 37
-int getMBID(const char *path, char mbid[MBID_BUFFER_SIZE]);
+int parse_mbid(const char *path, char mbid[MBID_BUFFER_SIZE]);
 
 #ifdef __cplusplus
 }

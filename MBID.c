@@ -50,11 +50,11 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 
-int toSynchSafe32(char bytes[]) {
+int to_syncsafe(char bytes[]) {
     return ((int)bytes[0] << 21) + ((int)bytes[1] << 14) + ((int)bytes[2] << 7) + (int)bytes[3];
 }
 
-int toInteger32(char bytes[]) {
+int to_integer(char bytes[]) {
     int size = 0;
     int i;
     for (i=0; i<4; i++) {
@@ -73,7 +73,7 @@ int mfile(int length, char ret[], FILE *fp) {
     }
 }
     
-int getMBID(const char *path, char mbid[MBID_BUFFER_SIZE]) {
+int parse_mbid(const char *path, char mbid[MBID_BUFFER_SIZE]) {
 
     FILE *fp;
     int s = 1;
@@ -127,17 +127,17 @@ int getMBID(const char *path, char mbid[MBID_BUFFER_SIZE]) {
             debug("Extended header found.\n");
             if (version[0] == 4) {
                 if (-1 == mfile(4,size_extended,fp)) break;
-                extended_size = toSynchSafe32(size_extended);
+                extended_size = to_syncsafe(size_extended);
             } else {
                 if (-1 == mfile(4,size_extended,fp)) break;
-                extended_size = toInteger32(size_extended);
+                extended_size = to_integer(size_extended);
             }
             debug("Extended header size: %d\n",extended_size);
             fseek(fp,extended_size,SEEK_CUR);
         }
     
         if (-1 == mfile(4,size,fp)) break;
-        tag_size = toSynchSafe32(size);
+        tag_size = to_syncsafe(size);
         debug("Tag size: %d\n",tag_size);
 
         while (1) {
@@ -153,10 +153,10 @@ int getMBID(const char *path, char mbid[MBID_BUFFER_SIZE]) {
             }
             if (version_major == 4) {
                 if (-1 == mfile(4,frame_header,fp)) goto mbid_err_exit;
-                frame_size = toSynchSafe32(frame_header);
+                frame_size = to_syncsafe(frame_header);
             } else {
                 if (-1 == mfile(4,frame_header,fp)) goto mbid_err_exit;
-                frame_size = toInteger32(frame_header);
+                frame_size = to_integer(frame_header);
             }
             if (frame_size <= 0 || frame_size >= tag_size) {
                 debug("Bad frame size %d\n",frame_size);
@@ -197,7 +197,7 @@ int main(int argc, const char *argv[]) {
 
     char mbid[MBID_BUFFER_SIZE];
 
-    if (getMBID(argv[1],mbid) == 0) {
+    if (parse_mbid(argv[1],mbid) == 0) {
         debug("File: %s\nMBID: %s\n\n", argv[1], mbid);
     }
 
